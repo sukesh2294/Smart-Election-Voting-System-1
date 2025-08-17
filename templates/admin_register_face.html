@@ -1,0 +1,533 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Face Registration</title>
+
+<style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #0f0f23 0%, #1a1a2e 30%, #2d1810 60%, #16213e 100%);
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        .scroll-progress {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 0%;
+            height: 4px;
+            background: linear-gradient(45deg, #667eea, #ff8c42);
+            z-index: 1001;
+            transition: width 0.1s ease;
+            box-shadow: 0 0 10px rgba(255, 140, 66, 0.5);
+        }
+
+        .grid-background {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: -2;
+            opacity: 0.1;
+        }
+
+        .grid-background::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 200%;
+            height: 200%;
+            background-image: 
+                linear-gradient(rgba(255, 255, 255, 0.3) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255, 255, 255, 0.3) 1px, transparent 1px);
+            background-size: 50px 50px;
+            animation: moveGrid 20s linear infinite;
+        }
+
+        @keyframes moveGrid {
+            0% { transform: translate(0, 0); }
+            100% { transform: translate(50px, 50px); }
+        }
+
+        .glass {
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 15px;
+            box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
+        }
+
+        header {
+            padding: 1rem 2rem;
+            position: fixed;
+            top: 0;
+            width: 100%;
+            z-index: 1000;
+            transition: all 0.3s ease;
+        }
+
+        nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem 2rem;
+        }
+
+        .logo {
+            font-size: 1.8rem;
+            font-weight: bold;
+            color: white;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 2rem;
+        }
+
+        .nav-links a {
+            color: white;
+            text-decoration: none;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+
+        .nav-links a:hover {
+            text-shadow: 0 0 10px rgba(255,255,255,0.8);
+        }
+
+        .bg-animation {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: -1;
+        }
+
+        .floating-shapes {
+            position: absolute;
+            width: 100px;
+            height: 100px;
+            background: rgba(255, 140, 66, 0.08);
+            border-radius: 50%;
+            animation: float 6s ease-in-out infinite;
+        }
+
+        .shape1 { top: 20%; left: 10%; animation-delay: 0s; }
+        .shape2 { top: 60%; left: 80%; animation-delay: 2s; }
+        .shape3 { top: 80%; left: 20%; animation-delay: 4s; }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-20px); }
+        }
+
+        .main-container {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 120px 20px 20px;
+        }
+
+        .container {
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 20px;
+            padding: 40px;
+            width: 100%;
+            max-width: 600px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+            text-align: center;
+        }
+
+        .step-indicator {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 30px;
+        }
+
+        .step {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.3);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 10px;
+            color: white;
+            font-weight: bold;
+            position: relative;
+        }
+
+        .step.active {
+            background: linear-gradient(45deg, #ff8c42, #ff6b00);
+            box-shadow: 0 0 20px rgba(255, 140, 66, 0.5);
+        }
+
+        .step.completed {
+            background: linear-gradient(45deg, #4CAF50, #45a049);
+            box-shadow: 0 0 20px rgba(76, 175, 80, 0.5);
+        }
+
+        .step::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 100%;
+            width: 30px;
+            height: 2px;
+            background: rgba(255, 255, 255, 0.3);
+            transform: translateY(-50%);
+        }
+
+        .step:last-child::after {
+            display: none;
+        }
+
+        h1 {
+            color: white;
+            margin-bottom: 20px;
+            font-size: 2.5em;
+            text-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+        }
+
+        .instruction {
+            color: rgba(255, 255, 255, 0.9);
+            margin-bottom: 30px;
+            font-size: 18px;
+            line-height: 1.6;
+        }
+
+        .camera-container {
+            position: relative;
+            margin: 30px auto;
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            background: rgba(0, 0, 0, 0.5);
+            max-width: 400px;
+        }
+
+        #video {
+            width: 100%;
+            height: 300px;
+            object-fit: cover;
+            display: block;
+        }
+
+        #canvas {
+            display: none;
+        }
+
+        .face-overlay {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 200px;
+            height: 200px;
+            border: 3px solid #ff8c42;
+            border-radius: 50%;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% { opacity: 0.7; transform: translate(-50%, -50%) scale(1); }
+            50% { opacity: 1; transform: translate(-50%, -50%) scale(1.05); }
+            100% { opacity: 0.7; transform: translate(-50%, -50%) scale(1); }
+        }
+
+        .face-status {
+            color: white;
+            margin: 15px 0;
+            font-size: 16px;
+            padding: 10px;
+            border-radius: 10px;
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .face-detected {
+            background: rgba(76, 175, 80, 0.3);
+            color: #4CAF50;
+        }
+
+        .face-not-detected {
+            background: rgba(255, 152, 0, 0.3);
+            color: #ff9800;
+        }
+
+        .verification-status {
+            margin: 20px 0;
+            padding: 15px;
+            border-radius: 10px;
+            font-size: 18px;
+            font-weight: bold;
+        }
+
+        .verification-success {
+            background: rgba(76, 175, 80, 0.3);
+            color: #4CAF50;
+            border: 1px solid rgba(76, 175, 80, 0.5);
+        }
+
+        .verification-failed {
+            background: rgba(244, 67, 54, 0.3);
+            color: #f44336;
+            border: 1px solid rgba(244, 67, 54, 0.5);
+        }
+
+        .btn {
+            padding: 15px 30px;
+            border: none;
+            border-radius: 15px;
+            background: linear-gradient(45deg, #ff8c42, #ff6b00);
+            color: white;
+            font-size: 18px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 15px rgba(255, 140, 66, 0.4);
+            margin: 10px;
+        }
+
+        .btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(255, 140, 66, 0.6);
+        }
+
+        .btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .btn.success {
+            background: linear-gradient(45deg, #4CAF50, #000000);
+            box-shadow: 0 5px 15px rgba(76, 175, 80, 0.4);
+        }
+
+        .btn.success:hover {
+            box-shadow: 0 8px 25px rgba(76, 175, 80, 0.6);
+        }
+
+        .message {
+            padding: 15px;
+            border-radius: 10px;
+            margin: 15px 0;
+            text-align: center;
+            font-weight: 500;
+        }
+
+        .success {
+            background: rgba(76, 175, 80, 0.2);
+            color: #4CAF50;
+            border: 1px solid rgba(76, 175, 80, 0.3);
+        }
+
+        .error {
+            background: rgba(244, 67, 54, 0.2);
+            color: #f44336;
+            border: 1px solid rgba(244, 67, 54, 0.3);
+        }
+
+        @media (max-width: 768px) {
+            .nav-links { display: none; }
+            .main-container { padding: 100px 10px 10px; }
+            .container { padding: 30px 20px; }
+            h1 { font-size: 2em; }
+        }
+    </style>
+
+</head>
+<body>
+    <div class="scroll-progress" id="scrollProgress"></div>
+    <div class="grid-background"></div>
+
+    <div class="bg-animation">
+        <div class="floating-shapes shape1"></div>
+        <div class="floating-shapes shape2"></div>
+        <div class="floating-shapes shape3"></div>
+    </div>
+
+    <header class="glass">
+        <nav>
+            <div class="logo">🛡️ Admin Panel</div>
+            <div class="nav-links">
+                <a href="/">Home</a>
+                <a href="/admin-login/step1">Login</a>
+                <a href="#about">About</a>
+                <a href="#contact">Contact</a>
+            </div>
+        </nav>
+    </header>
+
+    <div class="main-container">
+        <div class="container">
+            <div class="step-indicator">
+                <div class="step completed">1</div>
+                <div class="step completed">2</div>
+                <div class="step active">3</div>
+            </div>
+
+            <h1>Face Registration</h1>
+
+            <div class="instruction">
+                <p>Position your face in the center of the camera</p>
+                <p>We will register your face for future logins</p>
+            </div>
+
+            <div class="camera-container">
+                <video id="video" autoplay muted></video>
+                <canvas id="canvas" width="640" height="480"></canvas>
+                <div class="face-overlay"></div>
+            </div>
+
+            <div class="face-status" id="faceStatus">Click "Start Camera" to begin</div>
+
+            <div id="verificationStatus" class="verification-status" style="display: none;"></div>
+
+            <div>
+                <button class="btn" id="startBtn" onclick="startCamera()">Start Camera</button>
+                <button class="btn" id="registerBtn" onclick="captureAndRegisterFace()" style="display: none;" disabled>Register Face</button>
+                <button class="btn success" id="proceedBtn" onclick="goToDashboard()" style="display: none;">Continue</button>
+            </div>
+
+            <div id="message"></div>
+        </div>
+    </div>
+
+    <script>
+        
+        window.addEventListener('scroll', function() {
+            const scrollProgress = document.getElementById('scrollProgress');
+            const scrolled = (window.scrollY / (document.documentElement.scrollHeight - window.innerHeight)) * 100;
+            scrollProgress.style.width = scrolled + '%';
+        });
+
+        window.addEventListener('scroll', function() {
+            const header = document.querySelector('header');
+            if (window.scrollY > 100) {
+                header.style.background = 'rgba(255, 255, 255, 0.25)';
+                header.style.backdropFilter = 'blur(20px)';
+            } else {
+                header.style.background = 'rgba(255, 255, 255, 0.15)';
+                header.style.backdropFilter = 'blur(10px)';
+            }
+        });
+
+        let video;
+        let canvas;
+
+        async function startCamera() {
+            try {
+                const stream = await navigator.mediaDevices.getUserMedia({
+                    video: { width: 640, height: 480, facingMode: 'user' }
+                });
+                video = document.getElementById('video');
+                canvas = document.getElementById('canvas');
+                video.srcObject = stream;
+                video.onloadedmetadata = () => {
+                    document.getElementById('startBtn').style.display = 'none';
+                    document.getElementById('registerBtn').style.display = 'inline-block';
+                    document.getElementById('registerBtn').disabled = false;
+                    document.getElementById('faceStatus').textContent = 'Camera ready - Align your face and click Register';
+                };
+            } catch (error) {
+                showMessage('Camera access error: ' + error.message, 'error');
+            }
+        }
+
+        async function captureAndRegisterFace() {
+            document.getElementById('faceStatus').textContent = 'Registering face... Please stay still';
+            document.getElementById('registerBtn').disabled = true;
+
+            setTimeout(async () => {
+                const ctx = canvas.getContext('2d');
+                ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+                const imageData = canvas.toDataURL('image/jpeg', 0.8);
+
+                try {
+                    const response = await fetch('/admin-register/face', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ image: imageData })
+                    });
+                    if (!response.ok) {
+                        const text = await response.text();
+                        throw new Error('Network response was not ok: ' + text);
+                    }
+
+                    const data = await response.json();
+
+                    if (data.success) {
+                        document.getElementById('faceStatus').textContent = 'Face Registered Successfully ✓';
+                        document.getElementById('faceStatus').className = 'face-status face-detected';
+
+                        const statusDiv = document.getElementById('verificationStatus');
+                        statusDiv.textContent = 'Face registration complete!';
+                        statusDiv.className = 'verification-status verification-success';
+                        statusDiv.style.display = 'block';
+
+                        document.getElementById('proceedBtn').style.display = 'inline-block';
+                        showMessage('Face registered successfully!', 'success');
+                    } else {
+                        document.getElementById('faceStatus').textContent = 'Registration Failed ✗';
+                        document.getElementById('faceStatus').className = 'face-status face-not-detected';
+
+                        const statusDiv = document.getElementById('verificationStatus');
+                        statusDiv.textContent = 'Face registration failed. Try again.';
+                        statusDiv.className = 'verification-status verification-failed';
+                        statusDiv.style.display = 'block';
+
+                        document.getElementById('registerBtn').disabled = false;
+                        showMessage(data.message || 'Face registration failed', 'error');
+                    }
+                } catch (error) {
+                    showMessage('Registration error: ' + error.message, 'error');
+                    document.getElementById('registerBtn').disabled = false;
+                }
+            }, 3000);
+        }
+
+        function goToDashboard() {
+            if (video && video.srcObject) {
+                video.srcObject.getTracks().forEach(track => track.stop());
+            }
+            window.location.href = '/admin-dashboard';
+        }
+
+        function showMessage(message, type) {
+            const messageDiv = document.getElementById('message');
+            messageDiv.innerHTML = message;
+            messageDiv.className = `message ${type}`;
+            messageDiv.style.display = 'block';
+            setTimeout(() => { messageDiv.style.display = 'none'; }, 5000);
+        }
+
+        window.addEventListener('beforeunload', () => {
+            if (video && video.srcObject) {
+                video.srcObject.getTracks().forEach(track => track.stop());
+            }
+        });
+    </script>
+</body>
+</html>

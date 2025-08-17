@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Delete Voter</title>
+    <style>
+        body {
+            background: #1f1c2c;
+            color: white;
+            font-family: sans-serif;
+            padding: 50px;
+        }
+        h1 {
+            text-align: center;
+            color: #e74c3c;
+        }
+        form {
+            max-width: 500px;
+            margin: auto;
+            background: rgba(255,255,255,0.1);
+            padding: 30px;
+            border-radius: 10px;
+        }
+        input {
+            width: 100%;
+            padding: 12px;
+            margin-bottom: 20px;
+            border-radius: 8px;
+            border: none;
+        }
+        button {
+            width: 100%;
+            padding: 12px;
+            background: #c0392b;
+            border: none;
+            color: white;
+            font-size: 18px;
+            border-radius: 8px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Delete Voter</h1>
+    <form method="POST">
+        <input type="Id" name="Id" placeholder="Enter Voter's Id" required>
+        <input type="email" name="email" placeholder="Enter Voter Email" required>
+        <button type="submit">Delete Voter</button>
+    </form>
+</body>
+</html>

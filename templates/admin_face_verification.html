@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Admin Face Verification</title>
+    <style>
+        body {
+            background-color: #29295b;
+            color: white;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            text-align: center;
+            padding-top: 50px;
+        }
+        video {
+            width: 300px;
+            height: 300px;
+            border: 4px solid #e74c3c;
+            border-radius: 50%;
+            object-fit: cover;
+            margin-top: 20px;
+            box-shadow: 0 0 20px rgba(231, 76, 60, 0.6);
+        }
+
+        button {
+            margin-top: 20px;
+            padding: 10px 25px;
+            font-size: 16px;
+            font-weight: bold;
+            background: #e74c3c;
+            color: white;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+        }
+        button:hover {
+            background: #c0392b;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>🔒 Face Verification Required</h1>
+    <p>Please position your face clearly in the camera frame and click "Verify Face".</p>
+
+    <video id="video" width="400" height="300" autoplay></video>
+    <br>
+    <button onclick="captureAndSend()">Verify Face</button>
+
+    <canvas id="canvas" width="400" height="300" style="display:none;"></canvas>
+
+    <script>
+        const video = document.getElementById('video');
+        const canvas = document.getElementById('canvas');
+        const context = canvas.getContext('2d');
+
+        // Request camera access
+        navigator.mediaDevices.getUserMedia({ video: true })
+            .then((stream) => {
+                video.srcObject = stream;
+            })
+            .catch((err) => {
+                alert('Unable to access camera: ' + err);
+            });
+
+        function captureAndSend() {
+            context.drawImage(video, 0, 0, canvas.width, canvas.height);
+            const imageData = canvas.toDataURL('image/jpeg');
+
+            fetch('/admin-login/verify-face', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ image: imageData })
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data.success) {
+                    alert("✅ Face Verified Successfully!");
+                    window.location.href = "/admin-login/step3"; 
+                } else {
+                    alert("❌ Face does not match : " + data.message);
+                }
+            })
+            .catch((err) => {
+                console.error("Error:", err);
+                alert("⚠️ Error verifying face.");
+            });
+        }
+    </script>
+</body>
+</html>

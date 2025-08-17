@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>All Voters</title>
+    <style>
+        body {
+            background: #0f2027;
+            color: white;
+            font-family: 'Segoe UI', sans-serif;
+            padding: 40px;
+        }
+        h1 {
+            text-align: center;
+            color: #e74c3c;
+        }
+        table {
+            width: 100%;
+            margin-top: 30px;
+            border-collapse: collapse;
+            background: rgba(255,255,255,0.1);
+            backdrop-filter: blur(10px);
+        }
+        th, td {
+            padding: 12px;
+            border: 1px solid rgba(255,255,255,0.2);
+            text-align: center;
+        }
+        th {
+            background-color: #c0392b;
+        }
+    </style>
+</head>
+<body>
+
+    <header class="glass">
+    <nav style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; padding: 1rem 2rem;">
+        <div class="logo">🗳️ SMART Voting - Admin Panel</div>
+        <div class="admin-info">
+        <span class="badge">👑 Admin User</span>
+        </div>
+        <ul style="list-style: none; display: flex; gap: 20px; flex-wrap: wrap; margin: 0; padding: 0;">
+        <li><a href="/admin-dashboard" style="color: white; text-decoration: none;">Dashboard</a></li>
+        <li><a href="/assigned-election" style="color: white; text-decoration: none;">Elections</a></li>
+        <li><a href="/add-voters" style="color: white; text-decoration: none;">Add-Voters</a></li>
+        <li><a href="/add-candidate" style="color:white;text-decoration:none;">Add-Candidates</a></li>
+        <li><a href="/logout" style="color: white; text-decoration: none;">Logout</a></li>
+        </ul>
+    </nav>
+    </header>
+
+    <h1>Registered Voters</h1>
+    <table>
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Name</th>
+                <th>Email</th>
+                <th>Registered On</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for voter in voters %}
+            <tr>
+                <td>{{ voter.id }}</td>
+                <td>{{ voter.first_name }}</td>
+                <td>{{ voter.email }}</td>
+                <td>{{ voter.registration_date.strftime('%Y-%m-%d') }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</body>
+</html>

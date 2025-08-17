@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Add Voter</title>
+    <style>
+        body {
+            background: #16213e;
+            color: white;
+            font-family: 'Segoe UI', sans-serif;
+            padding: 50px;
+        }
+        h1 {
+            text-align: center;
+            color: #e74c3c;
+        }
+        form {
+            max-width: 500px;
+            margin: 40px auto;
+            background: rgba(255,255,255,0.1);
+            padding: 30px;
+            border-radius: 10px;
+            backdrop-filter: blur(10px);
+        }
+        input {
+            width: 100%;
+            padding: 12px;
+            margin-bottom: 20px;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+        }
+        button {
+            width: 100%;
+            padding: 12px;
+            background: linear-gradient(45deg, #e74c3c, #c0392b);
+            border: none;
+            color: white;
+            font-size: 18px;
+            border-radius: 8px;
+            cursor: pointer;
+        }
+        button:hover {
+            box-shadow: 0 0 15px #e74c3c;
+        }
+    </style>
+</head>
+<body>
+
+
+    <header class="glass">
+  <nav style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; padding: 1rem 2rem;">
+    <div class="logo">🗳️ SMART Voting - Admin Panel</div>
+    <div class="admin-info">
+      <span class="badge">👑 Admin User</span>
+    </div>
+     <ul style="list-style: none; display: flex; gap: 20px; flex-wrap: wrap; margin: 0; padding: 0;">
+      <li><a href="/admin-dashboard" style="color: white; text-decoration: none;">Dashboard</a></li>
+      <li><a href="/assigned-election" style="color: white; text-decoration: none;">Elections</a></li>
+      <li><a href="/view-voters" style="color: white; text-decoration: none;">Voters</a></li>
+      <li><a href="/add-candidate" style="color:white;text-decoration:none;">Add-Candidates</a></li>
+      <li><a href="/logout" style="color: white; text-decoration: none;">Logout</a></li>
+    </ul>
+  </nav>
+</header>
+
+    <h1>Add New Voter</h1>
+    <form method="POST">
+        <input type="text" name="first_name" placeholder="Full Name" required>
+        <input type="email" name="email" placeholder="Email Address" required>
+        <input type="password" name="password" placeholder="Password" required>
+        <button type="submit">Register Voter</button>
+    </form>
+</body>
+</html>

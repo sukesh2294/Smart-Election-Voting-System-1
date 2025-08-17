@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Server Error - Smart Election</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #0f0f23 0%, #1a1a2e 30%, #2d1810 60%, #16213e 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+        }
+
+        .grid-background {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: -2;
+            opacity: 0.1;
+        }
+
+        .grid-background::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 200%;
+            height: 200%;
+            background-image: 
+                linear-gradient(rgba(255, 255, 255, 0.3) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255, 255, 255, 0.3) 1px, transparent 1px);
+            background-size: 50px 50px;
+            animation: moveGrid 20s linear infinite;
+        }
+
+        @keyframes moveGrid {
+            0% { transform: translate(0, 0); }
+            100% { transform: translate(50px, 50px); }
+        }
+
+        .error-container {
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 20px;
+            padding: 60px 40px;
+            text-align: center;
+            max-width: 600px;
+            width: 90%;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+        }
+
+        .error-icon {
+            font-size: 6em;
+            margin-bottom: 20px;
+            animation: bounce 2s infinite;
+        }
+
+        @keyframes bounce {
+            0%, 20%, 50%, 80%, 100% { transform: translateY(0); }
+            40% { transform: translateY(-10px); }
+            60% { transform: translateY(-5px); }
+        }
+
+        .error-code {
+            font-size: 4em;
+            font-weight: bold;
+            color: #ff6b6b;
+            margin-bottom: 20px;
+            text-shadow: 0 2px 10px rgba(255, 107, 107, 0.3);
+        }
+
+        .error-title {
+            font-size: 2em;
+            margin-bottom: 20px;
+            color: white;
+        }
+
+        .error-message {
+            font-size: 1.2em;
+            color: rgba(255, 255, 255, 0.8);
+            margin-bottom: 30px;
+            line-height: 1.6;
+        }
+
+        .error-details {
+            background: rgba(255, 107, 107, 0.1);
+            border: 1px solid rgba(255, 107, 107, 0.3);
+            border-radius: 15px;
+            padding: 20px;
+            margin: 30px 0;
+            text-align: left;
+        }
+
+        .error-details h4 {
+            color: #ff6b6b;
+            margin-bottom: 10px;
+        }
+
+        .error-details ul {
+            color: rgba(255, 255, 255, 0.8);
+            margin-left: 20px;
+        }
+
+        .error-details li {
+            margin-bottom: 5px;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin-top: 30px;
+        }
+
+        .btn {
+            padding: 15px 30px;
+            border: none;
+            border-radius: 15px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .btn-primary {
+            background: linear-gradient(45deg, #ff8c42, #ff6b00);
+            color: white;
+            box-shadow: 0 5px 15px rgba(255, 140, 66, 0.4);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(255, 140, 66, 0.6);
+        }
+
+        .btn-secondary {
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+
+        .btn-secondary:hover {
+            background: rgba(255, 255, 255, 0.3);
+        }
+
+        .support-info {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            padding: 20px;
+            margin-top: 30px;
+        }
+
+        .support-info h4 {
+            color: #ff8c42;
+            margin-bottom: 10px;
+        }
+
+        .support-info p {
+            color: rgba(255, 255, 255, 0.8);
+            margin-bottom: 5px;
+        }
+
+        .support-info a {
+            color: #ff8c42;
+            text-decoration: none;
+        }
+
+        .support-info a:hover {
+            text-decoration: underline;
+        }
+
+        @media (max-width: 768px) {
+            .error-container {
+                padding: 40px 20px;
+            }
+            .error-code {
+                font-size: 3em;
+            }
+            .error-title {
+                font-size: 1.5em;
+            }
+            .action-buttons {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="grid-background"></div>
+
+    <div class="error-container">
+        <div class="error-icon">🔧</div>
+        <div class="error-code">500</div>
+        <h1 class="error-title">Internal Server Error</h1>
+        <p class="error-message">
+            Oops! Something went wrong on our end. We're experiencing technical difficulties 
+            and our team has been notified. Please try again in a few moments.
+        </p>
+
+        <div class="error-details">
+            <h4>What happened?</h4>
+            <ul>
+                <li>The server encountered an unexpected condition</li>
+                <li>A temporary technical issue is preventing the request from being completed</li>
+                <li>Our development team has been automatically notified</li>
+                <li>We're working to resolve this issue as quickly as possible</li>
+            </ul>
+        </div>
+
+        <div class="action-buttons">
+            <a href="/" class="btn btn-primary">🏠 Go to Home</a>
+            <button class="btn btn-secondary" onclick="window.location.reload()">🔄 Try Again</button>
+            <button class="btn btn-secondary" onclick="goBack()">⬅️ Go Back</button>
+        </div>
+
+        <div class="support-info">
+            <h4>Need Help?</h4>
+            <p>📧 Email: <a href="mailto:support@smartelection.gov">support@smartelection.gov</a></p>
+            <p>📞 Phone: <a href="tel:+91-1800-123-4567">1800-123-4567</a> (24/7 Support)</p>
+            <p>🕒 Error Time: <span id="errorTime"></span></p>
+            <p>🆔 Error ID: <span id="errorId"></span></p>
+        </div>
+    </div>
+
+    <script>
+        function goBack() {
+            if (window.history.length > 1) {
+                window.history.back();
+            } else {
+                window.location.href = '/';
+            }
+        }
+
+        // Set error time and ID
+        document.addEventListener('DOMContentLoaded', () => {
+            const now = new Date();
+            document.getElementById('errorTime').textContent = now.toLocaleString();
+            document.getElementById('errorId').textContent = 'ERR-' + Math.random().toString(36).substr(2, 9).toUpperCase();
+        });
+
+        // Auto-refresh after 30 seconds
+        setTimeout(() => {
+            if (confirm('Would you like to try reloading the page?')) {
+                window.location.reload();
+            }
+        }, 30000);
+    </script>
+</body>
+</html>

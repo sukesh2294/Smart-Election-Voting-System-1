@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Add Candidate</title>
+  <style>
+    /* === Your original full CSS here === */
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(135deg, #0f0f23 0%, #1a1a2e 30%, #2d1810 60%, #16213e 100%);
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    .scroll-progress {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 0%;
+      height: 4px;
+      background: linear-gradient(45deg, #667eea, #ff8c42);
+      z-index: 1001;
+      transition: width 0.1s ease;
+      box-shadow: 0 0 10px rgba(255, 140, 66, 0.5);
+    }
+
+    .grid-background {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: -2;
+      opacity: 0.1;
+    }
+
+    .grid-background::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 200%;
+      height: 200%;
+      background-image: 
+        linear-gradient(rgba(255, 255, 255, 0.3) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255, 255, 255, 0.3) 1px, transparent 1px);
+      background-size: 50px 50px;
+      animation: moveGrid 20s linear infinite;
+    }
+
+    @keyframes moveGrid {
+      0% { transform: translate(0, 0); }
+      100% { transform: translate(50px, 50px); }
+    }
+
+    .glass {
+      background: rgba(255, 255, 255, 0.15);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      border-radius: 15px;
+      box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
+    }
+
+    header {
+      padding: 1rem 2rem;
+      position: fixed;
+      top: 0;
+      width: 100%;
+      z-index: 1000;
+    }
+
+    .logo {
+      font-size: 1.8rem;
+      font-weight: bold;
+      color: white;
+      text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+    }
+
+    .bg-animation {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: -1;
+    }
+
+    .floating-shapes {
+      position: absolute;
+      width: 100px;
+      height: 100px;
+      background: rgba(255, 140, 66, 0.08);
+      border-radius: 50%;
+      animation: float 6s ease-in-out infinite;
+    }
+
+    .shape1 { top: 20%; left: 10%; animation-delay: 0s; }
+    .shape2 { top: 60%; left: 80%; animation-delay: 2s; }
+    .shape3 { top: 80%; left: 20%; animation-delay: 4s; }
+
+    @keyframes float {
+      0%, 100% { transform: translateY(0px); }
+      50% { transform: translateY(-20px); }
+    }
+
+    .main-container {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 120px 20px 20px;
+    }
+
+    .container {
+      background: rgba(255, 255, 255, 0.15);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      border-radius: 20px;
+      padding: 60px 40px;
+      width: 100%;
+      max-width: 600px;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+      color: white;
+    }
+
+    h1 {
+      text-align: center;
+      margin-bottom: 30px;
+      font-size: 2em;
+    }
+
+    form {
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+    }
+
+    label {
+      font-weight: bold;
+    }
+
+    input, select, textarea {
+      padding: 12px;
+      border-radius: 10px;
+      border: none;
+      font-size: 16px;
+      background: rgba(255, 255, 255, 0.1);
+      color: rgb(147, 145, 145);
+    }
+
+    input::placeholder {
+      color: rgba(255, 255, 255, 0.6);
+    }
+
+    button {
+      padding: 15px;
+      border: none;
+      border-radius: 15px;
+      background: linear-gradient(45deg, #ff8c42, #ff6b00);
+      color: white;
+      font-size: 18px;
+      font-weight: bold;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      box-shadow: 0 5px 15px rgba(255, 140, 66, 0.4);
+    }
+
+    button:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 8px 25px rgba(255, 140, 66, 0.6);
+    }
+  </style>
+</head>
+<body>
+  <div class="scroll-progress" id="scrollProgress"></div>
+  <div class="grid-background"></div>
+  <div class="bg-animation">
+    <div class="floating-shapes shape1"></div>
+    <div class="floating-shapes shape2"></div>
+    <div class="floating-shapes shape3"></div>
+  </div>
+
+  <header class="glass">
+  <nav style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; padding: 1rem 2rem;">
+    <div class="logo">🗳️ SMART Voting - Admin Panel</div>
+    <div class="admin-info">
+      <span class="badge">👑 Admin User</span>
+    </div>
+     <ul style="list-style: none; display: flex; gap: 20px; flex-wrap: wrap; margin: 0; padding: 0;">
+      <li><a href="/admin-dashboard" style="color: white; text-decoration: none;">Dashboard</a></li>
+      <li><a href="/assigned-election" style="color: white; text-decoration: none;">Elections</a></li>
+      <li><a href="/view-voters" style="color: white; text-decoration: none;">Voters</a></li>
+      <li><a href="/candidate-info" style="color:white;text-decoration:none;">ALL Candidates</a></li>
+      <li><a href="/logout" style="color: white; text-decoration: none;">Logout</a></li>
+    </ul>
+  </nav>
+</header>
+
+  <div class="main-container">
+    <div class="container glass">
+      <h1>Candidate Nomination Form</h1>
+      {% if success == '1' and candidate_id %}
+      <p style="text-align: center; color: lightgreen; font-weight: bold;">
+         ✅ Candidate registered successfully with ID: {{ candidate_id }}
+      </p>
+{% endif %}
+
+  {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+      <ul class="flashes" style="list-style: none; padding: 0;">
+        {% for category, message in messages %}
+          <li class="flash {{ category }}" style="
+            background: rgba(255,255,255,0.1);
+            padding: 10px;
+            border-radius: 10px;
+            margin-bottom: 10px;
+            color: orange;
+            text-align: center;
+            font-weight: bold;
+          ">
+            {{ message }}
+          </li>
+        {% endfor %}
+      </ul>
+    {% endif %}
+  {% endwith %}
+
+
+      <form action="/add-candidate" method="POST" enctype="multipart/form-data">
+        <label>Full Name</label>
+        <input type="text" name="name" placeholder="Candidate Name" required />
+
+        <label>Party Name</label>
+        <input type="text" name="party" placeholder="Political Party" required />
+
+        <label>Date of Birth</label>
+        <input type="date" name="dob" required />
+
+        <label>Gender</label>
+        <select name="gender" required>
+          <option value="">Select Gender</option>
+          <option>Male</option>
+          <option>Female</option>
+          <option>Other</option>
+        </select>
+
+        <label>Email</label>
+        <input type="email" name="email" placeholder="candidate@email.com" required />
+
+        <label>Phone</label>
+        <input type="tel" name="phone" placeholder="10-digit mobile" required pattern="[0-9]{10}" />
+
+        <label>Address</label>
+        <textarea name="address" rows="2" required></textarea>
+
+        <label>Education</label>
+        <input type="text" name="education" placeholder="Qualification" required />
+
+        <label >Select Election</label>
+        <select for="election" name="election_id" id="election" required>
+          {% if elections and elections|length > 0 %}
+            <option value="">-- Select Election --</option>
+            {% for election in elections %}
+              <option value="{{ election.election_id }}">{{ election.title }} (ID: {{ election.election_id }}) </option>
+            {% endfor %}
+          {% else %}
+            <option value="">-- Election Not Created --</option>
+          {% endif %}
+        </select>
+
+
+        <label>Upload Party Symbol </label>
+        <input type="file" name="symbol" accept="image/*" required />
+        
+
+        <label>Upload Candidate Photo</label>
+        <input type="file" name="photo" accept="image/*" required/>
+
+        <label>Description</label>
+        <textarea name="description" rows="2" required></textarea>
+
+        <button type="submit">Submit Nomination</button>
+      </form>
+    </div>
+  </div>
+
+  <script>
+    window.addEventListener('DOMContentLoaded', () => {
+      const urlParams = new URLSearchParams(window.location.search);
+      if (urlParams.get('success') === '1') {
+        const cid = urlParams.get('cid');
+       
+        window.history.replaceState({}, document.title, window.location.pathname);
+
+        setTimeout(() => {
+          alert(`Candidate registered successfully with ID: ${cid}`);
+          window.location.href = "/admin-dashboard";
+        }, 100);
+        
+}
+
+  });
+
+    window.addEventListener('scroll', function () {
+      const scrollProgress = document.getElementById('scrollProgress');
+      const scrolled = (window.scrollY / (document.documentElement.scrollHeight - window.innerHeight)) * 100;
+      scrollProgress.style.width = scrolled + '%';
+    });
+  </script>
+</body>
+</html>

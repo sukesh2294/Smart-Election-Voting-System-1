@@ -1,0 +1,361 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Election Results - Voter</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style>
+    /* Same styles as admin page */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(135deg, #0f0f23 0%, #1a1a2e 30%, #2d1810 60%, #16213e 100%);
+      min-height: 100vh;
+      color: #fff;
+      overflow-x: hidden;
+    }
+
+    .scroll-progress {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 0%;
+      height: 4px;
+      background: linear-gradient(45deg, #667eea, #ff8c42);
+      z-index: 1001;
+      transition: width 0.1s ease;
+      box-shadow: 0 0 10px rgba(255, 140, 66, 0.5);
+    }
+
+    .grid-background {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: -2;
+      opacity: 0.08;
+    }
+
+    .grid-background::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 200%;
+      height: 200%;
+      background-image: 
+        linear-gradient(rgba(255, 255, 255, 0.3) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255, 255, 255, 0.3) 1px, transparent 1px);
+      background-size: 50px 50px;
+      animation: moveGrid 20s linear infinite;
+    }
+
+    @keyframes moveGrid {
+      0% { transform: translate(0, 0); }
+      100% { transform: translate(50px, 50px); }
+    }
+
+    .glass {
+      background: rgba(255, 255, 255, 0.15);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      border-radius: 15px;
+      box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
+    }
+
+    header {
+      padding: 1rem 2rem;
+      position: fixed;
+      top: 0;
+      width: 100%;
+      z-index: 1000;
+    }
+
+    .logo {
+      font-size: 1.8rem;
+      font-weight: bold;
+      color: white;
+    }
+
+    .container {
+      padding: 120px 30px 40px;
+      max-width: 1200px;
+      margin: auto;
+    }
+
+    .controls button {
+      background: linear-gradient(45deg, #00c9ff, #92fe9d);
+      color: white;
+      padding: 10px 18px;
+      border-radius: 10px;
+      border: none;
+      margin: 8px 10px 8px 0;
+      cursor: pointer;
+      font-weight: bold;
+    }
+
+    .results-table {
+      width: 100%;
+      border-collapse: collapse;
+      border-radius: 15px;
+      margin-top: 20px;
+      overflow: hidden;
+    }
+
+    .results-table th {
+      background: rgba(255,255,255,0.2);
+      padding: 14px;
+      color: #f1c40f;
+    }
+
+    .results-table td {
+      padding: 12px;
+      text-align: center;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    }
+
+    .results-table tr:nth-child(even) {
+      background: rgba(255,255,255,0.05);
+    }
+
+    .highlight-card {
+      background: rgba(39, 174, 96, 0.1);
+      border-left: 5px solid #2ecc71;
+      padding: 1rem 2rem;
+      border-radius: 10px;
+      font-size: 1.2rem;
+      margin: 20px 0;
+      color: #2ecc71;
+    }
+
+    .summary-cards {
+      display: flex;
+      justify-content: space-around;
+      margin-top: 40px;
+      gap: 20px;
+      flex-wrap: wrap;
+    }
+
+    .card {
+      background: rgba(255, 255, 255, 0.05);
+      border-radius: 12px;
+      padding: 20px;
+      width: 180px;
+      text-align: center;
+      box-shadow: 0 0 15px rgba(0, 255, 255, 0.1);
+    }
+
+    .card h3 {
+      color: #0ef;
+    }
+
+    .card p {
+      font-size: 22px;
+      font-weight: bold;
+    }
+
+    .modal {
+      display: none;
+      position: fixed;
+      z-index: 9999;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 95%;
+      max-width: 600px;
+      padding: 30px;
+      border-radius: 20px;
+      background: rgba(255, 255, 255, 0.05);
+      backdrop-filter: blur(15px);
+      color: #fff;
+    }
+
+    .close-btn {
+      background: #ff4e50;
+      padding: 8px 12px;
+      border: none;
+      border-radius: 10px;
+      color: white;
+      float: right;
+      cursor: pointer;
+    }
+
+    select, form button {
+      padding: 10px;
+      border-radius: 10px;
+      border: none;
+      margin-right: 10px;
+    }
+
+    form button {
+      background: #f39c12;
+      color: white;
+      font-weight: bold;
+    }
+
+    ul {
+      list-style: none;
+      display: flex;
+      gap: 20px;
+      flex-wrap: wrap;
+    }
+
+    ul li a {
+      color: white;
+      text-decoration: none;
+    }
+
+    ul li a:hover {
+      text-decoration: underline;
+    }
+  </style>
+</head>
+<body>
+  <div class="scroll-progress" id="scrollProgress"></div>
+  <div class="grid-background"></div>
+
+  <header class="glass">
+    <nav style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap;">
+      <div class="logo">🗳️ SMART Voting - Voter Panel</div>
+      <div class="admin-info"><span class="badge">🙋 Voter</span></div>
+      <ul>
+        <li><a href="/voter-dashboard">Dashboard</a></li>
+        <li><a href="/voter-dashboard">My Elections</a></li>
+        <li><a href="/voter-results">Results</a></li>
+        <li><a href="/logout">Logout</a></li>
+      </ul>
+    </nav>
+  </header>
+
+  <div class="container">
+    <form method="POST">
+      <label for="election_id"><strong>Select Election:</strong></label>
+      <select name="election_id" required>
+        <option value="">-- Choose Election --</option>
+        {% for e in elections %}
+        <option value="{{ e.election_id }}","{{e.title}}" {% if election and election.election_id == e.election_id %}selected{% endif %}>
+          {{ e.title }} (ID: {{ e.election_id }})
+        </option>
+        {% endfor %}
+      </select>
+      <button type="submit">View Results</button>
+    </form>
+  </div>
+
+  {% if election %}
+  <div class="container">
+    <h1 style="text-align:center; margin: 30px 0;">🗳️ {{ election.title }} Results</h1>
+    
+    <div class="controls">
+      {% if show_live %}
+      <button onclick="openChartModal()">📊 View Charts</button>
+      {% endif %}
+    </div>
+
+    {% if show_live %}
+      {% if winner_id and winner_id in vote_counts %}
+      <div class="highlight-card">
+        🏆 Winner: <strong>{{ candidates_dict[winner_id].name }}</strong> ({{ candidates_dict[winner_id].party }}) – {{ vote_counts[winner_id] }} votes
+      </div>
+      {% endif %}
+
+      <table class="results-table">
+        <thead>
+          <tr><th>Candidate</th><th>Party</th><th>Votes</th></tr>
+        </thead>
+        <tbody>
+          {% for c in candidates %}
+          <tr>
+            <td>{{ c.name }}</td>
+            <td>{{ c.party }}</td>
+            <td id="count-{{ c.candidate_id }}">0</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    {% else %}
+      <p style="text-align:center; margin-top: 30px;">🔒 Live results are currently hidden. Please check back after results are published.</p>
+    {% endif %}
+  </div>
+  {% endif %}
+
+  <div id="chartModal" class="modal">
+    <button class="close-btn" onclick="closeChartModal()">×</button>
+    <h3>Select Chart Type</h3>
+    <button onclick="renderChart('bar')">📊 Bar</button>
+    <button onclick="renderChart('pie')">🥧 Pie</button>
+    <canvas id="resultChart" style="margin-top: 20px;"></canvas>
+  </div>
+
+  <div class="container">
+    <div class="summary-cards">
+      <div class="card"><h3>Total Elections</h3><p>{{ elections | length }}</p></div>
+      <div class="card"><h3>Total Candidates</h3><p>{{ candidates | length }}</p></div>
+      <div class="card"><h3>Total Votes</h3><p>{{ vote_counts.values() | sum }}</p></div>
+    </div>
+  </div>
+
+  <script>
+    let voteCounts = JSON.parse(`{{ vote_counts | tojson | safe }}`);
+    let candidateNames = JSON.parse(`{{ candidate_names | tojson | safe }}`);
+
+    window.onload = () => {
+      for (let id in voteCounts) {
+        let el = document.getElementById('count-' + id);
+        if (!el) continue;
+        let count = 0, final = voteCounts[id], step = Math.ceil(final / 40);
+        let interval = setInterval(() => {
+          count += step;
+          if (count >= final) {
+            count = final;
+            clearInterval(interval);
+          }
+          el.textContent = count;
+        }, 50);
+      }
+    };
+
+    window.addEventListener('scroll', () => {
+      const scrollProgress = document.getElementById('scrollProgress');
+      const scrolled = (window.scrollY / (document.documentElement.scrollHeight - window.innerHeight)) * 100;
+      scrollProgress.style.width = scrolled + '%';
+    });
+
+    function openChartModal() {
+      document.getElementById('chartModal').style.display = 'block';
+    }
+
+    function closeChartModal() {
+      document.getElementById('chartModal').style.display = 'none';
+    }
+
+    function renderChart(type) {
+      const ctx = document.getElementById('resultChart').getContext('2d');
+      if (window.myChart) window.myChart.destroy();
+      window.myChart = new Chart(ctx, {
+        type: type,
+        data: {
+          labels: candidateNames,
+          datasets: [{
+            label: 'Votes',
+            data: Object.values(voteCounts),
+            backgroundColor: ['#e74c3c', '#3498db', '#f1c40f', '#2ecc71', '#9b59b6']
+          }]
+        },
+        options: { responsive: true }
+      });
+    }
+    
+  </script>
+</body>
+</html>

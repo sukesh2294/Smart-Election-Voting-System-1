@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Candidate Info</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(135deg, #0f0f23 0%, #1a1a2e 30%, #2d1810 60%, #16213e 100%);
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    .scroll-progress {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 0%;
+      height: 4px;
+      background: linear-gradient(45deg, #667eea, #ff8c42);
+      z-index: 1001;
+      transition: width 0.1s ease;
+      box-shadow: 0 0 10px rgba(255, 140, 66, 0.5);
+    }
+
+    .grid-background {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: -2;
+      opacity: 0.1;
+    }
+
+    .grid-background::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 200%;
+      height: 200%;
+      background-image: 
+        linear-gradient(rgba(255, 255, 255, 0.3) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255, 255, 255, 0.3) 1px, transparent 1px);
+      background-size: 50px 50px;
+      animation: moveGrid 20s linear infinite;
+    }
+
+    @keyframes moveGrid {
+      0% { transform: translate(0, 0); }
+      100% { transform: translate(50px, 50px); }
+    }
+
+    .glass {
+      background: rgba(255, 255, 255, 0.15);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      border-radius: 15px;
+      box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
+    }
+
+    header {
+      padding: 1rem 2rem;
+      position: fixed;
+      top: 0;
+      width: 100%;
+      z-index: 1000;
+    }
+
+    .logo {
+      font-size: 1.8rem;
+      font-weight: bold;
+      color: white;
+      text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+    }
+
+    .main-container {
+      padding: 120px 20px 40px;
+      display: flex;
+      justify-content: center;
+    }
+
+    .container {
+      width: 90%;
+      max-width: 1100px;
+      color: white;
+    }
+
+    h1 {
+      text-align: center;
+      margin-bottom: 30px;
+      font-size: 2em;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      border-radius: 15px;
+      overflow: hidden;
+    }
+
+    th, td {
+      padding: 15px;
+      text-align: center;
+    }
+
+    th {
+      background: rgba(255,255,255,0.2);
+    }
+
+    tr:nth-child(even) {
+      background: rgba(255,255,255,0.05);
+    }
+
+    tr:hover {
+      background: rgba(255,255,255,0.1);
+    }
+
+    .view-btn {
+      padding: 8px 15px;
+      background: linear-gradient(45deg, #00c9ff, #92fe9d);
+      color: white;
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: 0.3s ease;
+    }
+
+    .view-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 5px 15px rgba(0, 255, 180, 0.4);
+    }
+
+    .nav-link {
+    color: white;
+    text-decoration: none;
+    font-weight: 500;
+    padding: 6px 10px;
+    border-radius: 8px;
+    transition: background 0.3s ease;
+  }
+
+  .nav-link:hover {
+    background-color: rgba(255, 255, 255, 0.15);
+  }
+
+  .logout-link {
+    background-color: #ff4e50;
+    padding: 6px 12px;
+    border-radius: 8px;
+    color: white;
+  }
+
+  .logout-link:hover {
+    background-color: #e94043;
+  }
+
+  nav {
+    flex-wrap: wrap;
+  }
+
+  @media (max-width: 600px) {
+    nav ul {
+      flex-direction: column;
+      width: 100%;
+      gap: 10px;
+      margin-top: 10px;
+    }
+  }
+
+
+
+    /* Modal Style */
+    .modal {
+      display: none;
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      z-index: 2000;
+      width: 90%;
+      max-width: 500px;
+      padding: 30px;
+      color: white;
+    }
+
+    .modal-content {
+      background: rgba(255, 255, 255, 0.1);
+      padding: 20px;
+      border-radius: 15px;
+    }
+
+    .close-btn {
+      margin-top: 20px;
+      background: #ff4e50;
+      padding: 10px 15px;
+      border: none;
+      border-radius: 10px;
+      color: white;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="scroll-progress" id="scrollProgress"></div>
+  <div class="grid-background"></div>
+
+  <header class="glass">
+  <nav style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; padding: 1rem 2rem;">
+    <div class="logo">🗳️ SMART Voting - Admin Panel</div>
+    <div class="admin-info">
+      <span class="badge">👑 Admin User</span>
+    </div>
+     <ul style="list-style: none; display: flex; gap: 20px; flex-wrap: wrap; margin: 0; padding: 0;">
+      <li><a href="/admin-dashboard" style="color: white; text-decoration: none;">Dashboard</a></li>
+      <li><a href="/assigned-election" style="color: white; text-decoration: none;">Elections</a></li>
+      <li><a href="/view-voters" style="color: white; text-decoration: none;">Voters</a></li>
+      <li><a href="/add-candidate" style="color:white;text-decoration:none;">Add-Candidates</a></li>
+      <li><a href="/logout" style="color: white; text-decoration: none;">Logout</a></li>
+    </ul>
+  </nav>
+</header>
+
+
+  <div class="main-container">
+    <div class="container glass">
+
+      <form method="POST" style="margin-bottom: 20px;">
+      <label for="election_id"><strong>Select Election:</strong></label>
+      <select name="election_id" required style="padding: 8px; margin-left: 10px;">
+        <option value="">-- Choose Election --</option>
+        {% for e in elections %}
+          <option value="{{ e.election_id }}"
+            {% if election and election.election_id == e.election_id %}selected{% endif %}>
+            {{ e.title }} (ID: {{ e.election_id }})
+          </option>
+        {% endfor %}
+      </select>
+      <button type="submit" class="view-btn" style="margin-left: 10px;">View Candidates</button>
+    </form>
+
+
+
+      <h1>All Candidates</h1>
+      <table>
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Name</th>
+            <th>Party</th>
+            <th>Election</th>
+            <th>Action</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for c in candidates %}
+          <tr>
+            <td>{{ c.candidate_id }}</td>
+            <td>{{ c.name }}</td>
+            <td>{{ c.party }}</td>
+            <td>{{ c.election.title}}</td>
+            <td>
+              {% if show_delete %}
+                <form method="POST" action="/delete-candidate/{{ c.candidate_id }}" onsubmit="return confirm('Are you sure you want to delete this candidate?');">
+                  <button type="submit" class="view-btn" style="background: red;">Delete</button>
+                </form>
+              {% else %}
+                <button class="view-btn" onclick="showDetails(
+                    '{{ c.candidate_id }}',
+                    '{{ c.name }}',
+                    '{{ c.party }}',
+                    '{{ c.election.title }}',
+                    '{{ c.gender }}',
+                    '{{ c.email }}',
+                    '{{ c.phone }}',
+                    '{{ c.address }}',
+                    '{{ c.education }}',
+                    `{{ c.symbol }}`
+                )">View</button>
+              {% endif %}
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+
+
+      </table>
+    </div>
+  </div>
+
+  <!-- Modal -->
+  <div class="modal glass" id="candidateModal">
+    <div class="modal-content">
+      <h2>Candidate Details</h2>
+      <div id="modalContent"></div>
+      <button class="close-btn" onclick="document.getElementById('candidateModal').style.display='none'">Close</button>
+    </div>
+  </div>
+
+  <script>
+    function showDetails(id, name, party, electionTitle, gender, email, phone, address, education, symbol) {
+      const content = `
+        <p><strong>ID:</strong> ${id}</p>
+        <p><strong>Name:</strong> ${name}</p>
+        <p><strong>Party:</strong> ${party}</p>
+        <p><strong>Election:</strong> ${electionTitle}</p>
+        <p><strong>Gender:</strong> ${gender}</p>
+        <p><strong>Email:</strong> ${email}</p>
+        <p><strong>Phone:</strong> ${phone}</p>
+        <p><strong>Address:</strong> ${address}</p>
+        <p><strong>Education:</strong> ${education}</p>
+        <p><strong>Symbol Description:</strong> ${symbol}</p>
+      `;
+      document.getElementById('modalContent').innerHTML = content;
+      document.getElementById('candidateModal').style.display = 'block';
+    }
+
+    window.addEventListener('scroll', function () {
+      const scrollProgress = document.getElementById('scrollProgress');
+      const scrolled = (window.scrollY / (document.documentElement.scrollHeight - window.innerHeight)) * 100;
+      scrollProgress.style.width = scrolled + '%';
+    });
+  </script>
+
+</body>
+</html>
